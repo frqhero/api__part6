@@ -1,3 +1,4 @@
+from random import randint
 import os
 
 from dotenv import load_dotenv
@@ -11,8 +12,8 @@ def download_image(url, abs_path, params=None):
         file.write(response.content)
 
 
-def download_python_comics():
-    link = 'https://xkcd.com/353/info.0.json'
+def download_python_comics(comics_num):
+    link = f'https://xkcd.com/{comics_num}/info.0.json'
     response = requests.get(link)
     response.raise_for_status()
     deserialized_response = response.json()
@@ -60,10 +61,21 @@ def wall_post(saved_photo_data):
     link = 'https://api.vk.com/method/wall.post'
     response = requests.post(link, params=saved_photo_data)
     response.raise_for_status()
-    1
+
+
+def get_last_comics_number():
+    link = 'https://xkcd.com/info.0.json'
+    response = requests.get(link)
+    response.raise_for_status()
+    deserialized_response = response.json()
+    num = deserialized_response['num']
+    return num
+
 
 def main():
-    file_name, alt = download_python_comics()
+    total_comics_number = get_last_comics_number()
+    comics_num = randint(1, total_comics_number)
+    file_name, alt = download_python_comics(comics_num)
     load_dotenv()
     token = os.getenv('VK_TOKEN')
     address_to_upload = get_address_to_upload(token)
