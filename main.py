@@ -92,6 +92,7 @@ def main():
         'v': '5.124'
     }
     wall_post(saved_photo_data)
+    os.remove(file_name)
 
 
 if __name__ == '__main__':
