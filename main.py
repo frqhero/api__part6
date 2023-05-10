@@ -78,13 +78,14 @@ def main():
     file_name, alt = download_python_comics(comics_num)
     load_dotenv()
     token = os.getenv('VK_TOKEN')
+    community_id = os.getenv('COMMUNITY_ID')
     address_to_upload = get_address_to_upload(token)
     uploaded_photo_data = upload_picture(address_to_upload, file_name)
     uploaded_photo_data['access_token'] = token
     uploaded_photo_data['v'] = '5.124'
     saved_photo = save_wall_photo(uploaded_photo_data)
     saved_photo_data = {
-        'owner_id': '-220382476',
+        'owner_id': f'-{community_id}',
         'attachments': saved_photo,
         'message': alt,
         'from_group': '1',
