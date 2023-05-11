@@ -52,10 +52,9 @@ def save_wall_photo(uploaded_photo_data):
     response = requests.post(link, params=uploaded_photo_data)
     response.raise_for_status()
     response_deserialized = response.json()['response'][0]
-    return (
-        f"photo{response_deserialized['owner_id']}_"
-        f"{response_deserialized['id']}"
-    )
+    owner_id = response_deserialized['owner_id']
+    photo_id = response_deserialized['id']
+    return f'photo{owner_id}_{photo_id}'
 
 
 def wall_post(saved_photo_data):
