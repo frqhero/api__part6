@@ -6,6 +6,15 @@ from dotenv import load_dotenv
 import requests
 
 
+def get_last_comics_number():
+    link = 'https://xkcd.com/info.0.json'
+    response = requests.get(link)
+    response.raise_for_status()
+    deserialized_response = response.json()
+    num = deserialized_response['num']
+    return num
+
+
 def download_image(url, abs_path, params=None):
     response = requests.get(url, params=params)
     response.raise_for_status()
@@ -59,7 +68,7 @@ def save_wall_photo(uploaded_photo_data, token, version):
     return f'photo{owner_id}_{photo_id}'
 
 
-def wall_post(community_id, saved_photo, alt, token, version):
+def post_on_wall(community_id, saved_photo, alt, token, version):
     saved_photo_data = {
         'owner_id': f'-{community_id}',
         'attachments': saved_photo,
@@ -70,15 +79,6 @@ def wall_post(community_id, saved_photo, alt, token, version):
     link = 'https://api.vk.com/method/wall.post'
     response = requests.post(link, params=saved_photo_data)
     response.raise_for_status()
-
-
-def get_last_comics_number():
-    link = 'https://xkcd.com/info.0.json'
-    response = requests.get(link)
-    response.raise_for_status()
-    deserialized_response = response.json()
-    num = deserialized_response['num']
-    return num
 
 
 def main():
@@ -92,7 +92,7 @@ def main():
     address_to_upload = get_address_to_upload(token, version)
     uploaded_photo_data = upload_picture(address_to_upload, file_name)
     saved_photo = save_wall_photo(uploaded_photo_data, token, version)
-    wall_post(community_id, saved_photo, alt, token, version)
+    post_on_wall(community_id, saved_photo, alt, token, version)
     os.remove(file_name)
 
 
