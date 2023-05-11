@@ -1,4 +1,5 @@
 from random import randint
+from urllib.parse import urlparse, unquote
 import os
 
 from dotenv import load_dotenv
@@ -18,7 +19,8 @@ def download_python_comics(comics_num):
     response.raise_for_status()
     deserialized_response = response.json()
     file_link = deserialized_response['img']
-    file_name = file_link.split('/')[-1]
+    parsed_img_url = urlparse(file_link)
+    file_name = os.path.basename(unquote(parsed_img_url.path))
     alt = deserialized_response['alt']
     download_image(file_link, file_name)
     return file_name, alt
