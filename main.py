@@ -6,6 +6,11 @@ from dotenv import load_dotenv
 import requests
 
 
+def check_for_vk_errors(feedback):
+    if 'error' in feedback:
+        raise requests.HTTPError(feedback['error'])
+
+
 def get_last_comics_number():
     link = 'https://xkcd.com/info.0.json'
     response = requests.get(link)
@@ -43,7 +48,9 @@ def get_address_to_upload(token, version):
     }
     response = requests.get(link, params=params)
     response.raise_for_status()
-    return response.json()['response']['upload_url']
+    deserialized_response = response.json()
+    check_for_vk_errors(deserialized_response)
+    return deserialized_response['response']['upload_url']
 
 
 def upload_picture(address, file_name):
@@ -53,7 +60,9 @@ def upload_picture(address, file_name):
         }
         response = requests.post(address, files=files)
     response.raise_for_status()
-    return response.json()
+    deserialized_response = response.json()
+    check_for_vk_errors(deserialized_response)
+    return deserialized_response
 
 
 def save_wall_photo(uploaded_photo_data, token, version):
@@ -62,9 +71,11 @@ def save_wall_photo(uploaded_photo_data, token, version):
     link = 'https://api.vk.com/method/photos.saveWallPhoto'
     response = requests.post(link, params=uploaded_photo_data)
     response.raise_for_status()
-    response_deserialized = response.json()['response'][0]
-    owner_id = response_deserialized['owner_id']
-    photo_id = response_deserialized['id']
+    deserialized_response = response.json()
+    check_for_vk_errors(deserialized_response)
+    vk_response = deserialized_response['response'][0]
+    owner_id = vk_response['owner_id']
+    photo_id = vk_response['id']
     return f'photo{owner_id}_{photo_id}'
 
 
@@ -79,6 +90,8 @@ def post_on_wall(community_id, saved_photo, alt, token, version):
     link = 'https://api.vk.com/method/wall.post'
     response = requests.post(link, params=saved_photo_data)
     response.raise_for_status()
+    deserialized_response = response.json()
+    check_for_vk_errors(deserialized_response)
 
 
 def main():
