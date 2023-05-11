@@ -35,8 +35,9 @@ python3 main.py
 После регистрации сообщества и приложения VK, необходимо пройти процедуру [Implicit Flow](https://dev.vk.com/api/access-token/implicit-flow-user) для получения токена.  
 
 Файл .env ожидает указания следующих переменных:
-* ``VK_TOKEN``
-* ``COMMUNITY_ID`` - id сообщества
+* `VK_TOKEN`
+* `COMMUNITY_ID` - id сообщества
+* `API_VERSION` - версия апи (по умолчанию 5.124)
 
 
 ### Цель проекта

@@ -26,11 +26,11 @@ def download_python_comics(comics_num):
     return file_name, alt
 
 
-def get_address_to_upload(token):
+def get_address_to_upload(token, version):
     link = 'https://api.vk.com/method/photos.getWallUploadServer'
     params = {
         'access_token': token,
-        'v': '5.124'
+        'v': version,
     }
     response = requests.get(link, params=params)
     response.raise_for_status()
@@ -47,7 +47,9 @@ def upload_picture(address, file_name):
     return response.json()
 
 
-def save_wall_photo(uploaded_photo_data):
+def save_wall_photo(uploaded_photo_data, token, version):
+    uploaded_photo_data['access_token'] = token
+    uploaded_photo_data['v'] = version
     link = 'https://api.vk.com/method/photos.saveWallPhoto'
     response = requests.post(link, params=uploaded_photo_data)
     response.raise_for_status()
@@ -57,7 +59,14 @@ def save_wall_photo(uploaded_photo_data):
     return f'photo{owner_id}_{photo_id}'
 
 
-def wall_post(saved_photo_data):
+def wall_post(community_id, saved_photo, alt, token, version):
+    saved_photo_data = {
+        'owner_id': f'-{community_id}',
+        'attachments': saved_photo,
+        'message': alt,
+        'access_token': token,
+        'v': version,
+    }
     link = 'https://api.vk.com/method/wall.post'
     response = requests.post(link, params=saved_photo_data)
     response.raise_for_status()
@@ -78,21 +87,12 @@ def main():
     file_name, alt = download_python_comics(comics_num)
     load_dotenv()
     token = os.getenv('VK_TOKEN')
+    version = os.getenv('API_VERSION', '5.124')
     community_id = os.getenv('COMMUNITY_ID')
-    address_to_upload = get_address_to_upload(token)
+    address_to_upload = get_address_to_upload(token, version)
     uploaded_photo_data = upload_picture(address_to_upload, file_name)
-    uploaded_photo_data['access_token'] = token
-    uploaded_photo_data['v'] = '5.124'
-    saved_photo = save_wall_photo(uploaded_photo_data)
-    saved_photo_data = {
-        'owner_id': f'-{community_id}',
-        'attachments': saved_photo,
-        'message': alt,
-        'from_group': '1',
-        'access_token': token,
-        'v': '5.124'
-    }
-    wall_post(saved_photo_data)
+    saved_photo = save_wall_photo(uploaded_photo_data, token, version)
+    wall_post(community_id, saved_photo, alt, token, version)
     os.remove(file_name)
 
 
