@@ -86,9 +86,9 @@ def main():
     comics_num = randint(1, total_comics_number)
     file_name, alt = download_python_comics(comics_num)
     load_dotenv()
-    token = os.getenv('VK_TOKEN')
-    version = os.getenv('API_VERSION', '5.124')
-    community_id = os.getenv('COMMUNITY_ID')
+    token = os.environ['VK_TOKEN']
+    version = os.environ['API_VERSION']
+    community_id = os.environ['COMMUNITY_ID']
     address_to_upload = get_address_to_upload(token, version)
     uploaded_photo_data = upload_picture(address_to_upload, file_name)
     saved_photo = save_wall_photo(uploaded_photo_data, token, version)
