@@ -39,11 +39,10 @@ def get_address_to_upload(token):
 
 def upload_picture(address, file_name):
     with open(file_name, 'rb') as file:
-        url = address
         files = {
             'photo': file,
         }
-        response = requests.post(url, files=files)
+        response = requests.post(address, files=files)
     response.raise_for_status()
     return response.json()
 
