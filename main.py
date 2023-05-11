@@ -85,15 +85,17 @@ def main():
     total_comics_number = get_last_comics_number()
     comics_num = randint(1, total_comics_number)
     file_name, alt = download_python_comics(comics_num)
-    load_dotenv()
-    token = os.environ['VK_TOKEN']
-    version = os.environ['API_VERSION']
-    community_id = os.environ['COMMUNITY_ID']
-    address_to_upload = get_address_to_upload(token, version)
-    uploaded_photo_data = upload_picture(address_to_upload, file_name)
-    saved_photo = save_wall_photo(uploaded_photo_data, token, version)
-    post_on_wall(community_id, saved_photo, alt, token, version)
-    os.remove(file_name)
+    try:
+        load_dotenv()
+        token = os.environ['VK_TOKEN']
+        version = os.environ['API_VERSION']
+        community_id = os.environ['COMMUNITY_ID']
+        address_to_upload = get_address_to_upload(token, version)
+        uploaded_photo_data = upload_picture(address_to_upload, file_name)
+        saved_photo = save_wall_photo(uploaded_photo_data, token, version)
+        post_on_wall(community_id, saved_photo, alt, token, version)
+    finally:
+        os.remove(file_name)
 
 
 if __name__ == '__main__':
