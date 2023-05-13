@@ -87,6 +87,7 @@ def save_wall_photo(server, photo, hash_photo, token, version):
 def post_on_wall(community_id, saved_photo, alt, token, version):
     saved_photo_data = {
         'owner_id': f'-{community_id}',
+        'from_group': 1,
         'attachments': saved_photo,
         'message': alt,
         'access_token': token,
