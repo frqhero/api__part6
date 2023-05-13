@@ -65,11 +65,16 @@ def upload_picture(address, file_name):
     return deserialized_response
 
 
-def save_wall_photo(uploaded_photo_data, token, version):
-    uploaded_photo_data['access_token'] = token
-    uploaded_photo_data['v'] = version
+def save_wall_photo(server, photo, hash_photo, token, version):
+    params = {
+        'server': server,
+        'photo': photo,
+        'hash': hash_photo,
+        'access_token': token,
+        'v': version,
+    }
     link = 'https://api.vk.com/method/photos.saveWallPhoto'
-    response = requests.post(link, params=uploaded_photo_data)
+    response = requests.post(link, params=params)
     response.raise_for_status()
     deserialized_response = response.json()
     check_for_vk_errors(deserialized_response)
@@ -105,7 +110,13 @@ def main():
         community_id = os.environ['COMMUNITY_ID']
         address_to_upload = get_address_to_upload(token, version)
         uploaded_photo_data = upload_picture(address_to_upload, file_name)
-        saved_photo = save_wall_photo(uploaded_photo_data, token, version)
+        saved_photo = save_wall_photo(
+            uploaded_photo_data['server'],
+            uploaded_photo_data['photo'],
+            uploaded_photo_data['hash'],
+            token,
+            version,
+        )
         post_on_wall(community_id, saved_photo, alt, token, version)
     finally:
         os.remove(file_name)
